@@ -27,3 +27,9 @@ git() {
   fi
 }
 ```
+
+## Non-git commands
+
+By deafult `gitpluck` assumes you're going to pass git commands to each repository, so it prefixes your command with 'git '.  That's why the short syntax like `gitpluck pull` works.
+
+If you want to disable the prefixing, you can pass a `--nogit` flag as either the first or last arugment.  For example, `gitpluck ls --nogit` or `gitpluck --nogit ls` would both list the files in each repository.
