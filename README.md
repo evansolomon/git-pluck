@@ -1,8 +1,8 @@
 # `gitpluck`
 
-Updating lots of repositories can be annoying.  `gitpluck` automates the process by recursively searching for git repositories from your current directory and giving you the option to update each of them.  Passing `-a` or `--all` (.e.g `gitpluck -a`) will skip the confirmation step and just try to update all of your repositories.
+Managing lots of repositories can be annoying.  `gitpluck` automates the process by recursively searching for git repositories from your current directory and letting you pass arbitrary commands to each of them.
 
-`gitpluck` is pretty basic, it just runs `git pull` on every repo it finds.  That assumes that your current branch has an remote branch it's tracking.  If it doesn't, `gitpluck` will show you the error returned by git.
+For example, if you want to run `git pull` on each of the repositories within your current directory, you could run `gitpluck pull`.  If you wanted to be more specific, you could run `gitpluck pull origin master`.  To see what the state of each repository is, you could run `gitpluck status`
 
 ## Installation
 
@@ -12,18 +12,16 @@ This is most useful if you put `gitpluck` somewhere that your `$PATH` has access
 
 ## Usage
 
-Once you have access to the command, you can run `gitpluck` from wherever you like.  I found that I was tempted to follow normal Git convention though, and type it as `git pluck` or `git pluck -a`.  Git doesn't offer a way to add commands, but you can effectively do it by overloading the `git` command, checking for special cases, and passing off the rest.  I use this in a local config file that loads in my shell (in my case, loaded by a .zshrc file).
+I also find that it's convenient to be able to access `gitpluck` more like other Git commands, i.e. as `git pluck`.  To do this, I wrote a small function that overloads the "real" `git` command.  It checks for specific instances where I want to customize its behavior, and otherwise passes off my input to Git.
 
 ```shell
 # Git wrapper
 # Used to extend/overload git commands
 git() {
-  # Overload `git pluck [-a | --all]`
-  if [[ $@ == "pluck" ]]; then
-    command gitpluck;
-  elif [[ $@ == "pluck -a" || $@ == "pluck --all" ]]; then
-    command gitpluck -a;
-  # Pass anything else off to the real `git`
+	if [[ $1 == "pluck" ]]; then
+    # Remove the `pluck` arg
+    shift
+    command gitpluck "$@";
   else
     command git "$@";
   fi
