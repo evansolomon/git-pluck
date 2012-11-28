@@ -27,5 +27,5 @@ for root, directories, files in os.walk(os.getcwd()):
     print "Updating", relpath, "on branch", branch,
 
     # Try to do the pull
-    os.popen("cd %s && git pull" % root).read()
+    os.system("cd %s && git pull" % root)
     print "\n",
