@@ -42,7 +42,4 @@ for root, directories, files in os.walk(os.getcwd()):
     print "Entering '%s'" % highlight(relpath)
 
     # Pass the command into each repository
-    os.system("cd %s && %s" % (root, command))
-
-    # Breathing room
-    print "\n"
+    print os.popen("cd %s && %s" % (root, command)).read()
