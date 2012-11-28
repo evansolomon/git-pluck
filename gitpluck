@@ -2,6 +2,15 @@
 
 import os
 import argparse
+import sys
+
+
+# Helper to highlight text when supported
+def highlight(string):
+    if sys.stdout.isatty():
+        string = '\x1b[%sm%s\x1b[0m' % (';31', string)
+
+    return string
 
 # Parse args
 parser = argparse.ArgumentParser(description='Automate git updates')
@@ -13,18 +22,19 @@ for root, directories, files in os.walk(os.getcwd()):
     if not os.path.isdir(root + '/.git'):
         continue
 
+    # Get the relative path of the repo
+    relpath = os.path.relpath(root, os.getcwd())
+
     # Give the chance to skip certain repos if the all flag isn't set
     if not args['all']:
-        confirm = raw_input("Update repository: %s?\nType 'n' for no, <enter> for yes: " % root)
+        confirm = raw_input("Repository: %s\nType 'n' to skip, <enter> to update: " % highlight(relpath))
         if 'n' == confirm:
             continue
 
     # Get the current branch name
     branch = os.popen("cd %s && git symbolic-ref --short -q HEAD" % root).read()
-    # Get the relative path of the repo
-    relpath = os.path.relpath(root, os.getcwd())
     # Explain what's happening
-    print "Updating", relpath, "on branch", branch,
+    print "Updating", highlight(relpath), "on branch", highlight(branch)
 
     # Try to do the pull
     os.system("cd %s && git pull" % root)
