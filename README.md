@@ -12,7 +12,7 @@ This is most useful if you put `gitpluck` somewhere that your `$PATH` has access
 
 ## Usage
 
-I also find that it's convenient to be able to access `gitpluck` more like other Git commands, i.e. as `git pluck`.  To do this, I wrote a small function that overloads the "real" `git` command.  It checks for specific instances where I want to customize its behavior, and otherwise passes off my input to Git.
+I also find that it's convenient to be able to access `gitpluck` more like other Git commands, i.e. as `git pluck`.  To do this, I wrote a small function that overloads the "real" `git` command.  It checks for specific instances where I want to customize its behavior, and otherwise passes off my input to Git.  This gets loaded in my shell config (e.g. `.bashrc` or `.zshrc`).
 
 ```shell
 # Git wrapper
