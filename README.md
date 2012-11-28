@@ -1,6 +1,6 @@
 # `gitpluck`
 
-Managing lots of repositories can be annoying.  `gitpluck` automates the process by recursively searching for git repositories from your current directory and letting you pass arbitrary commands to each of them.
+Managing lots of repositories can be annoying.  `gitpluck` automates the process by recursively searching for git repositories from your current directory and letting you pass arbitrary commands to each of them.  Its design is inspired by Git core's `git submodule foreach`.
 
 For example, if you want to run `git pull` on each of the repositories within your current directory, you could run `gitpluck pull`.  If you wanted to be more specific, you could run `gitpluck pull origin master`.  To see what the state of each repository is, you could run `gitpluck status`
 
