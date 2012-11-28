@@ -20,6 +20,9 @@ def get_command():
     del sys.argv[0]
     return ' '.join(sys.argv)
 
+# Make sure there's at least 1 command to pass to the repos
+if 2 > len(sys.argv):
+    sys.exit("You need to include a command to run on each repository: e.g. gitpluck pull")
 
 # Process `--nogit` flag
 if '--nogit' == sys.argv[1] or '--nogit' == sys.argv[-1]:
