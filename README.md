@@ -9,3 +9,23 @@ Updating lots of repositories can be annoying.  `gitpluck` automates the process
 This is most useful if you put `gitpluck` somewhere that your `$PATH` has access to.  For example, assuming `~/bin` is in your `$PATH`, something like this:
 
 `ln -s /path/to/git-pluck/gitpluck ~/bin`
+
+## Usage
+
+Once you have access to the command, you can run `gitpluck` from wherever you like.  I found that I was tempted to follow normal Git convention though, and type it as `git pluck` or `git pluck -a`.  Git doesn't offer a way to add commands, but you can effectively do it by overloading the `git` command, checking for special cases, and passing off the rest.  I use this in a local config file that loads in my shell (in my case, loaded by a .zshrc file).
+
+```shell
+# Git wrapper
+# Used to extend/overload git commands
+git() {
+  # Overload `git pluck [-a | --all]`
+  if [[ $@ == "pluck" ]]; then
+    command gitpluck;
+  elif [[ $@ == "pluck -a" || $@ == "pluck --all" ]]; then
+    command gitpluck -a;
+  # Pass anything else off to the real `git`
+  else
+    command git "$@";
+  fi
+}
+```
