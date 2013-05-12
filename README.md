@@ -1,35 +1,15 @@
 # `gitpluck`
 
-Managing lots of repositories can be annoying.  `gitpluck` automates the process by recursively searching for git repositories from your current directory and letting you pass arbitrary commands to each of them.  Its design is inspired by Git core's `git submodule foreach`.
+Managing lots of repositories can be annoying.  `git pluck` automates the process by recursively searching for git repositories from your current directory and letting you pass arbitrary commands to each of them.  Its design is inspired by Git core's `git submodule foreach`.
 
-For example, if you want to run `git pull` on each of the repositories within your current directory, you could run `gitpluck pull`.  If you wanted to be more specific, you could run `gitpluck pull origin master`.  To see what the state of each repository is, you could run `gitpluck status`
+For example, if you want to run `git pull` on each of the repositories within your current directory, you could run `git pluck pull`.  If you wanted to be more specific, you could run `git pluck pull origin master`.  To see what the state of each repository is, you could run `git pluck status`
 
 ## Installation
 
-This is most useful if you put `gitpluck` somewhere that your `$PATH` has access to.  For example, assuming `~/bin` is in your `$PATH`, something like this:
-
-`ln -s /path/to/git-pluck/gitpluck ~/bin`
-
-## Usage
-
-I also find that it's convenient to be able to access `gitpluck` more like other Git commands, i.e. as `git pluck`.  To do this, I wrote a small function that overloads the "real" `git` command.  It checks for specific instances where I want to customize its behavior, and otherwise passes off my input to Git.  This gets loaded in my shell config (e.g. `.bashrc` or `.zshrc`).
-
-```shell
-# Git wrapper
-# Used to extend/overload git commands
-git() {
-	if [[ $1 == "pluck" ]]; then
-    # Remove the `pluck` arg
-    shift
-    command gitpluck "$@";
-  else
-    command git "$@";
-  fi
-}
-```
+Add the `git-pluck` executable to your `$PATH`, and Git will automatically use it when you run `git pluck`.
 
 ## Non-git commands
 
-By deafult `gitpluck` assumes you're going to pass git commands to each repository, so it prefixes your command with 'git '.  That's why the short syntax like `gitpluck pull` works.
+By deafult `git pluck` assumes you're going to pass git commands to each repository, so it prefixes your command with 'git '.  That's why the short syntax like `git pluck pull` works.
 
-If you want to disable the prefixing, you can pass a `--nogit` flag as either the first or last arugment.  For example, `gitpluck ls --nogit` or `gitpluck --nogit ls` would both list the files in each repository.
+If you want to disable the prefixing, you can pass a `--nogit` flag as either the first or last arugment.  For example, `git pluck ls --nogit` or `git pluck --nogit ls` would both list the files in each repository.
