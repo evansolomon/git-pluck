@@ -20,26 +20,31 @@ def get_command():
     del sys.argv[0]
     return ' '.join(sys.argv)
 
-# Make sure there's at least 1 command to pass to the repos
-if 2 > len(sys.argv):
-    sys.exit("You need to include a command to run on each repository: e.g. gitpluck pull")
 
-# Process `--nogit` flag
-if '--nogit' == sys.argv[1] or '--nogit' == sys.argv[-1]:
-    sys.argv.remove('--nogit')
-    command = get_command()
-else:
-    command = "git %s" % get_command()
+def main():
+    # Make sure there's at least 1 command to pass to the repos
+    if 2 > len(sys.argv):
+        sys.exit("You need to include a command to run on each repository: e.g. gitpluck pull")
 
-# Recurse through git repos
-for root, directories, files in os.walk(os.getcwd()):
-    # Skip directories that aren't git roots
-    if not os.path.isdir(root + '/.git'):
-        continue
+    # Process `--nogit` flag
+    if '--nogit' == sys.argv[1] or '--nogit' == sys.argv[-1]:
+        sys.argv.remove('--nogit')
+        command = get_command()
+    else:
+        command = "git %s" % get_command()
 
-    # Get the relative path of the repo
-    relpath = os.path.relpath(root, os.getcwd())
-    print "Entering '%s'" % highlight(relpath)
+    # Recurse through git repos
+    for root, directories, files in os.walk(os.getcwd()):
+        # Skip directories that aren't git roots
+        if not os.path.isdir(root + '/.git'):
+            continue
 
-    # Pass the command into each repository
-    print os.popen("cd %s && %s" % (root, command)).read()
+        # Get the relative path of the repo
+        relpath = os.path.relpath(root, os.getcwd())
+        print "Entering '%s'" % highlight(relpath)
+
+        # Pass the command into each repository
+        print os.popen("cd %s && %s" % (root, command)).read()
+
+if __name__ == '__main__':
+    main()
