@@ -2,49 +2,80 @@
 
 import os
 import sys
+import subprocess                       # Python 2.4+
+from contextlib import contextmanager   # Python 2.5+
 
 
-def highlight(string):
+class bcolors:
+    WHITE = '\x1b[;37m'
+    RED = '\x1b[;31m'
+    ORANGE = '\x1b[;33m'
+    GREEN = '\x1b[;32m'
+    CYAN = '\x1b[;36m'
+    BLUE = '\x1b[;34m'
+    PURPLE = '\x1b[;35m'
+    DEFAULT = '\x1b[0m'
+
+
+@contextmanager
+def pushd(new):
+    """Enter new directory inside context then return to old directory"""
+    old = os.getcwd()
+    os.chdir(new)
+    yield
+    os.chdir(old)
+
+
+def highlight(color, string):
     """Highlight text when supported"""
     if sys.stdout.isatty():
-        string = '\x1b[%sm%s\x1b[0m' % (';31', string)
+        string = ''.join((color, string, bcolors.DEFAULT))
 
     return string
 
 
-def get_command():
-    """Form command to pass to git repos"""
-    global sys
-
-    # Remove the first item, which is the script name
-    del sys.argv[0]
-    return ' '.join(sys.argv)
-
-
 def main():
+    # Remove script name from sys.argv
+    del sys.argv[0]
+
     # Make sure there's at least 1 command to pass to the repos
-    if 2 > len(sys.argv):
-        sys.exit("You need to include a command to run on each repository: e.g. git pluck pull")
+    if not sys.argv:
+        help_exit()
 
     # Process `--nogit` flag
-    if '--nogit' == sys.argv[1] or '--nogit' == sys.argv[-1]:
+    if '--nogit' in (sys.argv[0], sys.argv[-1]):
         sys.argv.remove('--nogit')
-        command = get_command()
+        if not sys.argv:
+            help_exit()
+        command = sys.argv
     else:
-        command = "git %s" % get_command()
+        command = ['git'] + sys.argv
 
     # Recurse through git repos
     for root, directories, files in os.walk(os.getcwd()):
         # Skip directories that aren't git roots
-        if not os.path.isdir(root + '/.git'):
+        if not os.path.isdir(os.path.join(root, '.git')):
             continue
 
         # Get the relative path of the repo
-        relpath = os.path.relpath(root, os.getcwd())
-        print "Entering '%s'" % highlight(relpath)
+        print "%s '%s'" % (
+            highlight(bcolors.BLUE, 'Entering'),
+            highlight(bcolors.ORANGE, os.path.relpath(root))
+        )
 
         # Pass the command into each repository
-        print os.popen("cd %s && %s" % (root, command)).read()
+        with pushd(root):
+            print highlight(bcolors.WHITE, ' '.join(command))
+            subprocess.call(command, stdout=sys.stdout, stderr=sys.stderr)
+            print
+
+
+def help_exit():
+    """Print usage then exit"""
+    print 'usage: git pluck [options] <command> [<args>]'
+    print
+    print '    --nogit\tdo not prepend \'git\' to the command'
+    sys.exit()
 
 if __name__ == '__main__':
     main()
