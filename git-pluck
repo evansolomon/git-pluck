@@ -58,11 +58,11 @@ def main():
             continue
 
         # Get the relative path of the repo
+        current_repo = os.path.relpath(root)
         print "%s '%s'" % (
             highlight(bcolors.BLUE, 'Entering'),
-            highlight(bcolors.ORANGE, os.path.relpath(root))
+            highlight(bcolors.ORANGE, current_repo)
         )
-        current_repo = os.path.relpath(root)
 
         # Pass the command into each repository
         with pushd(root):
